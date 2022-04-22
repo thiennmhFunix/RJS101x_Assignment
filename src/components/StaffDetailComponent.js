@@ -8,7 +8,7 @@ function RenderStaff(props) {
         return(
             <div className="row">
                 <div className="col-12 col-md-5 m-1">
-                    <CardImg width="100%" src="/assets/images/alberto.png" alt={props.staff.name} />
+                    <CardImg width="100%" src="/assets/images/vadonut.png" alt={props.staff.name} />
                 </div>
                 <div className="col-12 col-md-5 m-1">
                     <CardBody>
