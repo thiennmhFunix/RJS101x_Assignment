@@ -17,11 +17,23 @@ class Main extends Component {
 
         this.state = {
             staffs: STAFFS,
-            departments: DEPARTMENTS
+            departments: DEPARTMENTS,
+            newstaff: {}
         };
-    }
 
+        this.saveNewStaff = this.saveNewStaff.bind(this);
+    }
+    
+    saveNewStaff(formValues) {
+        
+        this.setState({
+            newstaff: { ...formValues }
+        });
+
+    }
+    
     render() {
+        
 
         const StaffWithId = () => {
 
@@ -32,12 +44,20 @@ class Main extends Component {
             );
         }
 
+        const NewStaff = () => {
+
+            return (
+                <StaffDetail staff={this.state.newstaff}  />
+            );
+        }
+
         return (
             <div>
                 <Header />
                 <Routes>
-                    <Route exact path="stafflist" element={<StaffList staffs={this.state.staffs} />} />
+                    <Route exact path="stafflist" element={<StaffList staffs={this.state.staffs} savenewstaff={this.saveNewStaff} />} />
                     <Route path="stafflist/:staffId" element={<StaffWithId />} />
+                    <Route path="stafflist/101" element={<NewStaff />} />
                     <Route exact path="departmentlist" element={<DeparmentList departments={this.state.departments} />} />
                     <Route exact path="salarylist" element={<SalaryList staffs={this.state.staffs} />} />
                     <Route path="*" element={<Navigate to="/stafflist" replace />} />
