@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Card, CardImg, CardText, Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Card, CardImg, CardText, Button, Modal, ModalHeader, ModalBody, Label, Row, Col } from 'reactstrap';
+import { Control, LocalForm, Errors } from "react-redux-form";
 import dateFormat from "dateformat";
 import moment from "moment";
 import { Link } from 'react-router-dom';
 
 const StaffList = (props) => {
 
-    const { staffs, savenewstaff } = props;
+    const { staffs, savenewstaff, departments } = props;
 
     const [searchKey, setSearchKey] = useState("");
     const [searchStaff, setSearchStaff] = useState("");
@@ -20,16 +21,7 @@ const StaffList = (props) => {
     const [newStaffAnnualLeave, setNewStaffAnnualLeave] = useState("");
     const [newStaffOverTime, setNewStaffOverTime] = useState("");
 
-    const [newStaffNameError, setNewStaffNameError] = useState("");
-    const [newStaffDoBError, setNewStaffDoBError] = useState("");
-    const [newStaffStartDateError, setNewStaffStartDateError] = useState("");
-    const [newStaffDepartmentError, setNewStaffDepartmentError] = useState("");
-    const [newStaffSalaryScaleError, setNewStaffSalaryScaleError] = useState("");
-    const [newStaffAnnualLeaveError, setNewStaffAnnualLeaveError] = useState("");
-    const [newStaffOverTimeError, setNewStaffOverTimeError] = useState("");
-
-    function handleSearch(e) {
-        e.preventDefault();
+    function handleSearch() {
         setSearchStaff(searchKey);
     }
 
@@ -37,8 +29,7 @@ const StaffList = (props) => {
         setModalOpen(!isModalOpen);
     };
 
-    function handleAdd(e) {
-        e.preventDefault();
+    function handleAdd() {
         localStorage.setItem('newStaffName', newStaffName);
         localStorage.setItem('newStaffDoB', newStaffDoB);
         localStorage.setItem('newStaffStartDate', newStaffStartDate);
@@ -66,38 +57,16 @@ const StaffList = (props) => {
 
     };
 
-    function validateName(val) {
-        if (val.length < 3) return setNewStaffNameError("At least 2 characters!");
-        else return setNewStaffNameError("");
-    }
-    function validateDoB(val) {
-        const m = moment().clone().subtract(18, 'years');
-        if (dateFormat(val, "yyyy/mm/dd") > dateFormat(m, "yyyy/mm/dd")) return setNewStaffDoBError("Must greater than 18 years old!");
-        else return setNewStaffDoBError("");
-    }
-    function validateStartDate(val) {
-        if (dateFormat(val, "yyyy/mm/dd") > dateFormat(Date.now(), "yyyy/mm/dd")) return setNewStaffStartDateError("Must before today!");
-        else return setNewStaffStartDateError("");
-    }
-    function validateDepartment(val) {
-        if (!["Sale", "HR", "Marketing", "IT", "Finance"].includes(val)) return setNewStaffDepartmentError("This department is not available!");
-        else return setNewStaffDepartmentError("");
-    }
-    function validateSalaryScale(val) {
-        if (isNaN(val)) return setNewStaffSalaryScaleError("Must be a number");
-        else if (val < 1 || val > 10) return setNewStaffSalaryScaleError("Must be between 1.0 and 10.0!");
-        else return setNewStaffSalaryScaleError("");
-    }
-    function validateAnnualLeave(val) {
-        if (isNaN(val)) return setNewStaffAnnualLeaveError("Must be a number");
-        else if (val >= 14 || val < 0) return setNewStaffAnnualLeaveError("Must under 14 days!");
-        else return setNewStaffAnnualLeaveError("");
-    }
-    function validateOverTime(val) {
-        if (isNaN(val)) return setNewStaffOverTimeError("Must be a number");
-        else if (val >= 7 || val < 0) return setNewStaffOverTimeError("Can't be over 7 days!");
-        else return setNewStaffOverTimeError("");
-    }
+    const m = moment();
+
+    const required = (val) => val && val.length;
+    const validateDepartment = (val) => val && departments.filter(department => department.name === val).length > 0;
+    const maxLength = (len) => (val) => !(val) || (val.length <= len);
+    const maxNumber = (num) => (val) => !(val) || (val <= num);
+    const maxDate = (year) => (val) => val && dateFormat(val, 'yyyy/mm/dd') <= dateFormat(m.clone().subtract(year, 'years'), 'yyyy/mm/dd');
+    const minLength = (len) => (val) => val && (val.length >= len);
+    const minNumber = (num) => (val) => val && (val >= num);
+    const isNumber = (val) => !isNaN(Number(val));
 
     const stafflistmenu = staffs.map(staff => {
         if (staff.name.toLowerCase().includes(searchStaff.toLowerCase())) {
@@ -129,6 +98,8 @@ const StaffList = (props) => {
         }
     };
 
+    const MyDateInput = (props) => <input type="date" {...props} />;
+
     // StaffList UI
     return (
         <div className="container">
@@ -137,14 +108,18 @@ const StaffList = (props) => {
                 <Button outline onClick={toggleModal} className="col-2 col-sm-1">
                     <span className="fa fa-solid fa-plus"></span>
                 </Button>
-                <Form onSubmit={handleSearch} className="col-12 col-sm-5">
+                <LocalForm onSubmit={handleSearch} className="col-12 col-sm-5">
                     <div className="row">
-                        <FormGroup className="col-9">
-                            <Input type="text" id="searchname" name="searchname" value={searchKey} onChange={(e) => setSearchKey(e.target.value)} />
-                        </FormGroup>
-                        <Button type="submit" value="submit" color="primary" className="col-2 col-sm-3">Tìm</Button>
+                        <Row className="form-group">
+                            <Col md={7}>
+                                <Control.text model=".searchname" id="searchname" name="searchname" className="form-control" value={searchKey} onChange={(e) => setSearchKey(e.target.value)} />
+                            </Col>
+                            <Col md={5}>
+                                <Button type="submit" color="primary">Tìm</Button>
+                            </Col>
+                        </Row>
                     </div>
-                </Form>
+                </LocalForm>
                 <hr /> 
             </div>
 
@@ -156,44 +131,139 @@ const StaffList = (props) => {
             <Modal isOpen={isModalOpen} toggle={toggleModal}>
                 <ModalHeader>Thêm nhân viên</ModalHeader>
                 <ModalBody>
-                <Form onSubmit={handleAdd}>
-                        <FormGroup>
-                            <Label htmlFor="staffName">Tên</Label>
-                            <Input type="text" id="staffName" name="staffName" value={newStaffName} valid={newStaffNameError === ""} invalid={newStaffNameError !== ""} onChange={(e) => { setNewStaffName(e.target.value); validateName(e.target.value) }} />
-                            <FormFeedback>{newStaffNameError}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="staffDoB">Ngày sinh</Label>
-                            <Input type="date" id="staffDoB" name="staffDoB" value={newStaffDoB} valid={newStaffDoBError === ""} invalid={newStaffDoBError !== ""} onChange={(e) => { setNewStaffDoB(e.target.value); validateDoB(e.target.value) }} />
-                            <FormFeedback>{newStaffDoBError}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="staffStartDate">Ngày vào công ty</Label>
-                            <Input type="date" id="staffStartDate" name="staffStartDate" value={newStaffStartDate} valid={newStaffStartDateError === ""} invalid={newStaffStartDateError !== ""} onChange={(e) => { setNewStaffStartDate(e.target.value); validateStartDate(e.target.value) }} />
-                            <FormFeedback>{newStaffStartDateError}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="staffDepartment">Phòng ban</Label>
-                            <Input type="text" id="staffDepartment" name="staffDepartment" value={newStaffDepartment} valid={newStaffDepartmentError === ""} invalid={newStaffDepartmentError !== ""} onChange={(e) => { setNewStaffDepartment(e.target.value); validateDepartment(e.target.value) }} />
-                            <FormFeedback>{newStaffDepartmentError}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="staffSalaryScale">Hệ số lương</Label>
-                            <Input type="text" id="staffSalaryScale" name="staffSalaryScale" value={newStaffSalaryScale} valid={newStaffSalaryScaleError === ""} invalid={newStaffSalaryScaleError !== ""} onChange={(e) => { setNewStaffSalaryScale(e.target.value); validateSalaryScale(e.target.value) }} />
-                            <FormFeedback>{newStaffSalaryScaleError}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="staffAnnualLeave">Số ngày nghỉ còn lại</Label>
-                            <Input type="text" id="staffAnnualLeave" name="staffAnnualLeave" value={newStaffAnnualLeave} valid={newStaffAnnualLeaveError === ""} invalid={newStaffAnnualLeaveError !== ""} onChange={(e) => { setNewStaffAnnualLeave(e.target.value); validateAnnualLeave(e.target.value) }} />
-                            <FormFeedback>{newStaffAnnualLeaveError}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="staffOverTime">Số ngày đã làm thêm</Label>
-                            <Input type="text" id="staffOverTime" name="staffOverTime" value={newStaffOverTime} valid={newStaffOverTimeError === ""} invalid={newStaffOverTimeError !== ""} onChange={(e) => { setNewStaffOverTime(e.target.value); validateOverTime(e.target.value) }} />
-                            <FormFeedback>{newStaffOverTimeError}</FormFeedback>
-                        </FormGroup>
-                        <Button type="submit" value="submit" color="primary">Thêm</Button>
-                    </Form>
+                <LocalForm onSubmit={handleAdd}>
+                        <Row className="form-group">
+                            <Label htmlFor="staffName" md={5}>Tên</Label>
+                            <Col md={7}>
+                                <Control.text model=".staffName" id="staffName" name="staffName" className="form-control" value={newStaffName} onChange={(e) => setNewStaffName(e.target.value)} validators={{
+                                            required, minLength: minLength(3), maxLength: maxLength(15)
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffName"
+                                show="touched"
+                                messages={{
+                                    required: 'Required',
+                                    minLength: 'Must be greater than 2 characters',
+                                    maxLength: 'Must be 15 characters or less'
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Label htmlFor="staffDoB" md={5}>Ngày sinh</Label>
+                            <Col md={7}>
+                                <Control model=".staffDoB" component={MyDateInput} id="staffDoB" name="staffDoB" className="form-control" value={newStaffDoB} onChange={(e) => setNewStaffDoB(e.target.value)} validators={{
+                                    required, maxDate: maxDate(18)
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffDoB"
+                                show="touched"
+                                messages={{
+                                    required: 'Required',
+                                    maxDate: 'Must be over 18 years old!',
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Label htmlFor="staffStartDate" md={5}>Ngày vào công ty</Label>
+                            <Col md={7}>
+                                <Control model=".staffStartDate" component={MyDateInput} id="staffStartDate" name="staffStartDate" className="form-control" value={newStaffStartDate} onChange={(e) => setNewStaffStartDate(e.target.value)} validators={{
+                                    required, maxDate: maxDate(0)
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffStartDate"
+                                show="touched"
+                                messages={{
+                                    required: 'Required',
+                                    maxDate: 'Must before today!',
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Label htmlFor="staffDepartment" md={5}>Phòng ban</Label>
+                            <Col md={7}>
+                                <Control.text model=".staffDepartment" id="staffDepartment" name="staffDepartment" className="form-control" value={newStaffDepartment} onChange={(e) => setNewStaffDepartment(e.target.value)} validators={{
+                                    required, validateDepartment
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffDepartment"
+                                show="touched"
+                                messages={{
+                                    required: 'Required!',
+                                    validateDepartment: 'This department is not available!'
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Label htmlFor="staffSalaryScale" md={5}>Hệ số lương</Label>
+                            <Col md={7}>
+                                <Control.text model=".staffSalaryScale" id="staffSalaryScale" name="staffSalaryScale" className="form-control" value={newStaffSalaryScale} onChange={(e) => setNewStaffSalaryScale(e.target.value)} validators={{
+                                    required, minNumber: minNumber(0), maxNumber: maxNumber(10), isNumber
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffSalaryScale"
+                                show="touched"
+                                messages={{
+                                    required: 'Required!',
+                                    minNumber: 'Must be a positive number!',
+                                    maxNumber: 'Must not be greater than 10.0!',
+                                    isNumber: 'Must be a number!'
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Label htmlFor="staffAnnualLeave" md={5}>Số ngày nghỉ còn lại</Label>
+                            <Col md={7}>
+                                <Control.text model=".staffAnnualLeave" id="staffAnnualLeave" name="staffAnnualLeave" className="form-control" value={newStaffAnnualLeave} onChange={(e) => setNewStaffAnnualLeave(e.target.value)} validators={{
+                                    required, minNumber: minNumber(0), maxNumber: maxNumber(14), isNumber
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffAnnualLeave"
+                                show="touched"
+                                messages={{
+                                    required: 'Required!',
+                                    minNumber: 'Must be a positive number of days!',
+                                    maxNumber: 'Must be less than 14 days!',
+                                    isNumber: 'Must be a number!'
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Label htmlFor="staffOverTime" md={5}>Số ngày đã làm thêm</Label>
+                            <Col md={7}>
+                                <Control.text model=".staffOverTime" id="staffOverTime" name="staffOverTime" className="form-control" value={newStaffOverTime} onChange={(e) => setNewStaffOverTime(e.target.value)} validators={{
+                                    required, minNumber: minNumber(0), maxNumber: maxNumber(7), isNumber
+                                }} />
+                            </Col>
+                            <Errors
+                                className="text-danger"
+                                model=".staffOverTime"
+                                show="touched"
+                                messages={{
+                                    required: 'Required!',
+                                    minNumber: 'Must be a positive number of days!',
+                                    maxNumber: 'Must be less than 7 days!',
+                                    isNumber: 'Must be a number!'
+                                }}
+                            />
+                        </Row>
+                        <Row className="form-group">
+                            <Col md={{size:10, offset: 5}}>
+                                <Button type="submit" color="primary">Thêm</Button>
+                            </Col>
+                        </Row>
+                    </LocalForm>
                 </ModalBody>
             </Modal>
         </div>

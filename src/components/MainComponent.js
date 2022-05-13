@@ -7,8 +7,32 @@ import DeparmentList from './DepartmentListComponent';
 import SalaryList from './SalaryListComponent';
 import { STAFFS } from '../shared/staffs';
 import { DEPARTMENTS } from '../shared/staffs';
-import { Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams, useLocation, useNavigate } from 'react-router-dom';
+import { connect } from "react-redux";
 
+function withRouter(Component) {
+    function ComponentWithRouterProp(props) {
+      let location = useLocation();
+      let navigate = useNavigate();
+      let params = useParams();
+      return (
+        <Component
+          {...props}
+          router={{ location, navigate, params }}
+        />
+      );
+    }
+  
+    return ComponentWithRouterProp;
+}
+
+const mapStateToProps = state => {
+    return {
+        departments: state.departments,
+        role: state.role,
+        staffs: state.staffs
+    }
+}
 
 class Main extends Component {
 
@@ -55,7 +79,7 @@ class Main extends Component {
             <div>
                 <Header />
                 <Routes>
-                    <Route exact path="stafflist" element={<StaffList staffs={this.state.staffs} savenewstaff={this.saveNewStaff} />} />
+                    <Route exact path="stafflist" element={<StaffList staffs={this.state.staffs} savenewstaff={this.saveNewStaff} departments={this.state.departments} />} />
                     <Route path="stafflist/:staffId" element={<StaffWithId />} />
                     <Route path="stafflist/101" element={<NewStaff />} />
                     <Route exact path="departmentlist" element={<DeparmentList departments={this.state.departments} />} />
@@ -68,4 +92,4 @@ class Main extends Component {
     }
 }
 
-export default Main;
+export default withRouter(connect(mapStateToProps)(Main));;
