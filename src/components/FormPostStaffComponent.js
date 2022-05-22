@@ -16,63 +16,57 @@ import dateFormat from "dateformat";
 import moment from "moment";
 import { Link } from "react-router-dom";
 
-const StaffList = (props) => {
-	const { staffs, savenewstaff, departments } = props;
+const FormPostStaff = (props) => {
+	const { postStaff } = props;
 
-	const [searchKey, setSearchKey] = useState("");
-	const [searchStaff, setSearchStaff] = useState("");
 	const [isModalOpen, setModalOpen] = useState(false);
-
-	const [newStaffName, setNewStaffName] = useState("");
-	const [newStaffDoB, setNewStaffDoB] = useState("");
-	const [newStaffStartDate, setNewStaffStartDate] = useState("");
-	const [newStaffDepartment, setNewStaffDepartment] = useState("");
-	const [newStaffSalaryScale, setNewStaffSalaryScale] = useState("");
-	const [newStaffAnnualLeave, setNewStaffAnnualLeave] = useState("");
-	const [newStaffOverTime, setNewStaffOverTime] = useState("");
-
-	function handleSearch() {
-		setSearchStaff(searchKey);
-	}
+	// const [newStaffName, setNewStaffName] = useState("");
+	// const [newStaffDoB, setNewStaffDoB] = useState("");
+	// const [newStaffStartDate, setNewStaffStartDate] = useState("");
+	// const [newStaffDepartment, setNewStaffDepartment] = useState("");
+	// const [newStaffSalaryScale, setNewStaffSalaryScale] = useState("");
+	// const [newStaffAnnualLeave, setNewStaffAnnualLeave] = useState("");
+	// const [newStaffOverTime, setNewStaffOverTime] = useState("");
 
 	function toggleModal() {
 		setModalOpen(!isModalOpen);
 	}
 
-	function handleAdd() {
-		localStorage.setItem("newStaffName", newStaffName);
-		localStorage.setItem("newStaffDoB", newStaffDoB);
-		localStorage.setItem("newStaffStartDate", newStaffStartDate);
-		localStorage.setItem("newStaffDepartment", newStaffDepartment);
-		localStorage.setItem("newStaffSalaryScale", newStaffSalaryScale);
-		localStorage.setItem("newStaffAnnualLeave", newStaffAnnualLeave);
-		localStorage.setItem("newStaffOverTime", newStaffOverTime);
+	// function handleAdd() {
+	// 	localStorage.setItem("newStaffName", newStaffName);
+	// 	localStorage.setItem("newStaffDoB", newStaffDoB);
+	// 	localStorage.setItem("newStaffStartDate", newStaffStartDate);
+	// 	localStorage.setItem("newStaffDepartment", newStaffDepartment);
+	// 	localStorage.setItem("newStaffSalaryScale", newStaffSalaryScale);
+	// 	localStorage.setItem("newStaffAnnualLeave", newStaffAnnualLeave);
+	// 	localStorage.setItem("newStaffOverTime", newStaffOverTime);
 
-		const formValues = {
-			id: 101,
-			name: localStorage.getItem("newStaffName"),
-			doB: localStorage.getItem("newStaffDoB"),
-			salaryScale: localStorage.getItem("newStaffSalaryScale"),
-			startDate: localStorage.getItem("newStaffStartDate"),
-			department: {
-				name: localStorage.getItem("newStaffDepartment"),
-			},
-			annualLeave: localStorage.getItem("newStaffAnnualLeave"),
-			overTime: localStorage.getItem("newStaffOverTime"),
-			image: "/assets/images/vadonut.png",
-		};
+	// 	const formValues = {
+	// 		id: 101,
+	// 		name: localStorage.getItem("newStaffName"),
+	// 		doB: localStorage.getItem("newStaffDoB"),
+	// 		salaryScale: localStorage.getItem("newStaffSalaryScale"),
+	// 		startDate: localStorage.getItem("newStaffStartDate"),
+	// 		department: {
+	// 			name: localStorage.getItem("newStaffDepartment"),
+	// 		},
+	// 		annualLeave: localStorage.getItem("newStaffAnnualLeave"),
+	// 		overTime: localStorage.getItem("newStaffOverTime"),
+	// 		image: "/assets/images/vadonut.png",
+	// 	};
 
-		toggleModal();
+	// 	toggleModal();
 
-		savenewstaff(formValues);
-	}
+	// 	savenewstaff(formValues);
+	// }
 
 	const m = moment();
 
 	const required = (val) => val && val.length;
 	const validateDepartment = (val) =>
 		val &&
-		departments.filter((department) => department.name === val).length > 0;
+		departments.departments.filter((department) => department.name === val)
+			.length > 0;
 	const maxLength = (len) => (val) => !val || val.length <= len;
 	const maxNumber = (num) => (val) => !val || val <= num;
 	const maxDate = (year) => (val) =>
@@ -83,88 +77,13 @@ const StaffList = (props) => {
 	const minNumber = (num) => (val) => val && val >= num;
 	const isNumber = (val) => !isNaN(Number(val));
 
-	const stafflistmenu = staffs.map((staff) => {
-		if (staff.name.toLowerCase().includes(searchStaff.toLowerCase())) {
-			return (
-				<div key={staff.id} className="col-6 col-sm-4 col-md-2">
-					<Card>
-						<Link to={`/stafflist/${staff.id}`}>
-							<CardImg
-								width="100%"
-								src="assets/images/vadonut.png"
-								alt={staff.name}
-							/>
-							<CardText>{staff.name}</CardText>
-						</Link>
-					</Card>
-				</div>
-			);
-		}
-	});
-
-	const Newstafflistmenu = () => {
-		if (
-			localStorage
-				.getItem("newStaffName")
-				.toLowerCase()
-				.includes(searchStaff.toLowerCase())
-		) {
-			return (
-				<div key="101" className="col-6 col-sm-4 col-md-2">
-					<Card>
-						<Link to={`/stafflist/101`}>
-							<CardImg
-								width="100%"
-								src="assets/images/vadonut.png"
-								alt={localStorage.getItem("newStaffName")}
-							/>
-							<CardText>{localStorage.getItem("newStaffName")}</CardText>
-						</Link>
-					</Card>
-				</div>
-			);
-		}
-	};
-
 	const MyDateInput = (props) => <input type="date" {...props} />;
 
-	// StaffList UI
 	return (
 		<div className="container">
-			<div className="row">
-				<h3 className="col-9 col-sm-4">Nhân viên</h3>
-				<Button outline onClick={toggleModal} className="col-2 col-sm-1">
-					<span className="fa fa-solid fa-plus"></span>
-				</Button>
-				<LocalForm onSubmit={handleSearch} className="col-12 col-sm-5">
-					<div className="row">
-						<Row className="form-group">
-							<Col md={7}>
-								<Control.text
-									model=".searchname"
-									id="searchname"
-									name="searchname"
-									className="form-control"
-									value={searchKey}
-									onChange={(e) => setSearchKey(e.target.value)}
-								/>
-							</Col>
-							<Col md={5}>
-								<Button type="submit" color="primary">
-									Tìm
-								</Button>
-							</Col>
-						</Row>
-					</div>
-				</LocalForm>
-				<hr />
-			</div>
-
-			<div className="row">
-				{stafflistmenu}
-				<Newstafflistmenu />
-			</div>
-
+			<Button outline onClick={toggleModal} className="col-2 col-sm-1">
+				<span className="fa fa-solid fa-plus"></span>
+			</Button>
 			<Modal isOpen={isModalOpen} toggle={toggleModal}>
 				<ModalHeader>Thêm nhân viên</ModalHeader>
 				<ModalBody>
@@ -395,4 +314,4 @@ const StaffList = (props) => {
 	);
 };
 
-export default StaffList;
+export default FormPostStaff;

@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import Header from "./HeaderComponent";
 import Footer from "./FooterComponent";
-import StaffList from "./StaffListComponent";
+import Home from "./HomeComponent";
 import StaffDetail from "./StaffDetailComponent";
 import DeparmentList from "./DepartmentListComponent";
 import SalaryList from "./SalaryListComponent";
-import { STAFFS } from "../shared/staffs";
-import { DEPARTMENTS } from "../shared/staffs";
 import {
 	Routes,
 	Route,
@@ -16,6 +14,11 @@ import {
 	useNavigate,
 } from "react-router-dom";
 import { connect } from "react-redux";
+import {
+	fetchStaffs,
+	searchStaffs,
+	fetchDepartments,
+} from "../redux/ActionCreators";
 
 function withRouter(Component) {
 	function ComponentWithRouterProp(props) {
@@ -36,30 +39,44 @@ function withRouter(Component) {
 
 const mapStateToProps = (state) => {
 	return {
-		departments: state.departments,
-		role: state.role,
 		staffs: state.staffs,
+		departments: state.departments,
 	};
 };
 
+const mapDispatchToProps = (dispatch) => ({
+	fetchStaffs: () => {
+		dispatch(fetchStaffs());
+	},
+	searchStaffs: (searchKey) => {
+		dispatch(searchStaffs(searchKey));
+	},
+	fetchDepartments: () => {
+		dispatch(fetchDepartments());
+	},
+});
+
 class Main extends Component {
-	constructor(props) {
-		super(props);
+	// constructor(props) {
+	// 	super(props);
 
-		this.state = {
-			staffs: STAFFS,
-			departments: DEPARTMENTS,
-			newstaff: {},
-		};
+	// 	this.state = {
+	// 		newstaff: {},
+	// 	};
 
-		this.saveNewStaff = this.saveNewStaff.bind(this);
+	// 	this.saveNewStaff = this.saveNewStaff.bind(this);
+	// }
+
+	componentDidMount() {
+		this.props.fetchStaffs();
+		this.props.fetchDepartments();
 	}
 
-	saveNewStaff(formValues) {
-		this.setState({
-			newstaff: { ...formValues },
-		});
-	}
+	// saveNewStaff(formValues) {
+	// 	this.setState({
+	// 		newstaff: { ...formValues },
+	// 	});
+	// }
 
 	render() {
 		const StaffWithId = () => {
@@ -72,13 +89,15 @@ class Main extends Component {
 							(staff) => staff.id === parseInt(params.staffId, 10)
 						)[0]
 					}
+					isLoading={this.props.staffs.isLoading}
+					errMess={this.props.staffs.errMess}
 				/>
 			);
 		};
 
-		const NewStaff = () => {
-			return <StaffDetail staff={this.state.newstaff} />;
-		};
+		// const NewStaff = () => {
+		// 	return <StaffDetail staff={this.state.newstaff} />;
+		// };
 
 		return (
 			<div>
@@ -88,19 +107,28 @@ class Main extends Component {
 						exact
 						path="stafflist"
 						element={
-							<StaffList
+							<Home
 								staffs={this.state.staffs}
-								savenewstaff={this.saveNewStaff}
+								// savenewstaff={this.saveNewStaff}
 								departments={this.state.departments}
+								staffsLoading={this.props.staffs.isLoading}
+								staffsErrMess={this.props.staffs.errMess}
+								searchStaffs={this.props.searchStaffs}
 							/>
 						}
 					/>
-					<Route path="stafflist/:staffId" element={<StaffWithId />} />
-					<Route path="stafflist/101" element={<NewStaff />} />
+					{/* <Route path="stafflist/:staffId" element={<StaffWithId />} /> */}
+					{/* <Route path="stafflist/101" element={<NewStaff />} /> */}
 					<Route
 						exact
 						path="departmentlist"
-						element={<DeparmentList departments={this.state.departments} />}
+						element={
+							<DeparmentList
+								departments={this.state.departments}
+								departmentsLoading={this.props.departments.isLoading}
+								departmentsErrMess={this.props.departments.errMess}
+							/>
+						}
 					/>
 					<Route
 						exact
@@ -115,4 +143,4 @@ class Main extends Component {
 	}
 }
 
-export default withRouter(connect(mapStateToProps)(Main));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
