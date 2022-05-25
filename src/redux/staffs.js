@@ -28,6 +28,10 @@ export const Staffs = (
 				staffs: [],
 			};
 
+		case ActionTypes.STAFF_POST:
+			var staff = action.payload;
+			return { ...state, staffs: state.staffs.concat(staff) };
+
 		default:
 			return state;
 	}

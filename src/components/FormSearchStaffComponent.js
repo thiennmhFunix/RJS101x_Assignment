@@ -20,11 +20,9 @@ const FormSearchStaff = (props) => {
 	const { searchStaffs } = props;
 
 	const [searchKey, setSearchKey] = useState("");
-	const [searchStaff, setSearchStaff] = useState("");
 
 	function handleSearch() {
-		setSearchStaff(searchKey);
-		searchStaffs(searchStaff);
+		searchStaffs(searchKey);
 	}
 
 	return (

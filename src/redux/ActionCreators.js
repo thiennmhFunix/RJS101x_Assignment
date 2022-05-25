@@ -40,6 +40,11 @@ export const staffsAdd = (staffs) => ({
 	payload: staffs,
 });
 
+export const staffPost = (staff) => ({
+	type: ActionTypes.STAFF_POST,
+	payload: staff,
+});
+
 export const searchStaffs = (searchKey) => (dispatch) => {
 	return fetch(baseUrl + "staffs")
 		.then(
@@ -59,30 +64,119 @@ export const searchStaffs = (searchKey) => (dispatch) => {
 			}
 		)
 		.then((response) => response.json())
-		.then((staffs) =>
-			dispatch(
-				staffsAdd(
-					staffs.map((staff) =>
-						staff.toLowerCase().includes(searchKey.toLowerCase())
-					)
-				)
-			)
-		)
+		.then((staffs) => {
+			var staffsfiltered = [];
+			staffs.map((staff) => {
+				if (staff.name.toLowerCase().includes(searchKey.toLowerCase()))
+					return staffsfiltered.push(staff);
+			});
+			dispatch(staffsAdd(staffsfiltered));
+		})
 		.catch((error) => dispatch(staffsFailed(error.message)));
 };
 
-export const postStaff = (name) => (dispatch) => {
-	const newStaff = {
-		name: name,
+export const postStaff =
+	(name, doB, startDate, departmentId, salaryScale, annualLeave, overTime) =>
+	(dispatch) => {
+		const newStaff = {
+			name: name,
+			doB: doB,
+			startDate: startDate,
+			departmentId: departmentId,
+			salaryScale: salaryScale,
+			annualLeave: annualLeave,
+			overTime: overTime,
+			image: "/images/vadonut.png",
+			salary: 3500000,
+		};
+
+		return fetch(baseUrl + "staffs", {
+			method: "POST",
+			body: JSON.stringify(newStaff),
+			headers: {
+				"Content-Type": "application/json",
+			},
+			credentials: "same-origin",
+		})
+			.then(
+				(response) => {
+					if (response.ok) return response;
+					else {
+						var error = new Error(
+							"Error " + response.status + ": " + response.statusText
+						);
+						error.response = response;
+						throw error;
+					}
+				},
+				(error) => {
+					var errmess = new Error(error.message);
+					throw errmess;
+				}
+			)
+			.then((response) => response.json())
+			.then((response) => dispatch(staffPost(response)))
+			.catch((error) => {
+				console.log("Post staffs", error.message);
+			});
 	};
 
-	return fetch(baseUrl + "staffs", {
-		method: "POST",
-		body: JSON.stringify(newStaff),
+export const patchStaff =
+	(
+		staffId,
+		name,
+		doB,
+		startDate,
+		departmentId,
+		salaryScale,
+		annualLeave,
+		overTime
+	) =>
+	(dispatch) => {
+		return fetch(baseUrl + "staffs/" + staffId, {
+			method: "PATCH",
+			body: JSON.stringify({
+				name: name,
+				doB: doB,
+				startDate: startDate,
+				departmentId: departmentId,
+				salaryScale: salaryScale,
+				annualLeave: annualLeave,
+				overTime: overTime,
+			}),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		})
+			.then(
+				(response) => {
+					if (response.ok) return response;
+					else {
+						var error = new Error(
+							"Error " + response.status + ": " + response.statusText
+						);
+						error.response = response;
+						throw error;
+					}
+				},
+				(error) => {
+					var errmess = new Error(error.message);
+					throw errmess;
+				}
+			)
+			.then((response) => response.json())
+			.then((response) => dispatch(staffPost(response)))
+			.catch((error) => {
+				console.log("Patch staffs", error.message);
+			});
+	};
+
+export const deleteStaff = (staffId) => (dispatch) => {
+	return fetch(baseUrl + "staffs/" + staffId, {
+		method: "DELETE",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		credentials: "same-origin",
 	})
 		.then(
 			(response) => {
@@ -101,9 +195,9 @@ export const postStaff = (name) => (dispatch) => {
 			}
 		)
 		.then((response) => response.json())
-		.then((response) => dispatch(staffsAdd(response)))
+		.then((response) => dispatch(staffPost(response)))
 		.catch((error) => {
-			console.log("Post comments", error.message);
+			console.log("Delete staffs", error.message);
 		});
 };
 

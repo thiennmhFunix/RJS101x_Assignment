@@ -14,41 +14,52 @@ import {
 import { Control, LocalForm, Errors } from "react-redux-form";
 import dateFormat from "dateformat";
 import moment from "moment";
-import { Link } from "react-router-dom";
 
-const FormPostStaff = (props) => {
-	const { postStaff, departments } = props;
+const FormPatchStaff = (props) => {
+	const { patchStaff, staff } = props;
 
 	const [isModalOpen, setModalOpen] = useState(false);
-	const [newStaffName, setNewStaffName] = useState("");
-	const [newStaffDoB, setNewStaffDoB] = useState("");
-	const [newStaffStartDate, setNewStaffStartDate] = useState("");
-	const [newStaffDepartment, setNewStaffDepartment] = useState("");
-	const [newStaffSalaryScale, setNewStaffSalaryScale] = useState("");
-	const [newStaffAnnualLeave, setNewStaffAnnualLeave] = useState("");
-	const [newStaffOverTime, setNewStaffOverTime] = useState("");
+	const [updatedStaffName, setUpdatedStaffName] = useState(staff.name);
+	const [updatedStaffDoB, setUpdatedStaffDoB] = useState(staff.doB);
+	const [updatedStaffStartDate, setUpdatedStaffStartDate] = useState(
+		staff.startDate
+	);
+	const [updatedStaffDepartment, setUpdatedStaffDepartment] = useState(
+		staff.department
+	);
+	const [updatedStaffSalaryScale, setUpdatedStaffSalaryScale] = useState(
+		staff.salaryScale
+	);
+	const [updatedStaffAnnualLeave, setUpdatedStaffAnnualLeave] = useState(
+		staff.annualLeave
+	);
+	const [updatedStaffOverTime, setUpdatedStaffOverTime] = useState(
+		staff.overTime
+	);
 
 	function toggleModal() {
 		setModalOpen(!isModalOpen);
 	}
 
-	function handlePost() {
+	function handlePatch() {
 		toggleModal();
 
-		postStaff(
-			newStaffName,
-			newStaffDoB,
-			newStaffStartDate,
-			newStaffDepartment,
-			newStaffSalaryScale,
-			newStaffAnnualLeave,
-			newStaffOverTime
+		patchStaff(
+			staff.id,
+			updatedStaffName,
+			updatedStaffDoB,
+			updatedStaffStartDate,
+			updatedStaffDepartment,
+			updatedStaffSalaryScale,
+			updatedStaffAnnualLeave,
+			updatedStaffOverTime
 		);
+
+		window.location.reload();
 	}
 
 	const m = moment();
 
-	const required = (val) => val && val.length;
 	const maxLength = (len) => (val) => !val || val.length <= len;
 	const maxNumber = (num) => (val) => !val || val <= num;
 	const maxDate = (year) => (val) =>
@@ -63,13 +74,13 @@ const FormPostStaff = (props) => {
 
 	return (
 		<div className="container">
-			<Button outline onClick={toggleModal} className="col-2 col-sm-1">
-				<span className="fa fa-solid fa-plus"></span>
+			<Button outline onClick={toggleModal} md={{ size: 10 }}>
+				Chỉnh sửa thông tin nhân viên
 			</Button>
 			<Modal isOpen={isModalOpen} toggle={toggleModal}>
-				<ModalHeader>Thêm nhân viên</ModalHeader>
+				<ModalHeader>Chỉnh sửa thông tin nhân viên</ModalHeader>
 				<ModalBody>
-					<LocalForm onSubmit={handlePost}>
+					<LocalForm onSubmit={handlePatch}>
 						<Row className="form-group">
 							<Label htmlFor="staffName" md={5}>
 								Tên
@@ -80,10 +91,9 @@ const FormPostStaff = (props) => {
 									id="staffName"
 									name="staffName"
 									className="form-control"
-									value={newStaffName}
-									onChange={(e) => setNewStaffName(e.target.value)}
+									value={updatedStaffName}
+									onChange={(e) => setUpdatedStaffName(e.target.value)}
 									validators={{
-										required,
 										minLength: minLength(3),
 										maxLength: maxLength(15),
 									}}
@@ -94,7 +104,6 @@ const FormPostStaff = (props) => {
 								model=".staffName"
 								show="touched"
 								messages={{
-									required: "Required",
 									minLength: "Must be greater than 2 characters",
 									maxLength: "Must be 15 characters or less",
 								}}
@@ -111,10 +120,9 @@ const FormPostStaff = (props) => {
 									id="staffDoB"
 									name="staffDoB"
 									className="form-control"
-									value={newStaffDoB}
-									onChange={(e) => setNewStaffDoB(e.target.value)}
+									value={updatedStaffDoB}
+									onChange={(e) => setUpdatedStaffDoB(e.target.value)}
 									validators={{
-										required,
 										maxDate: maxDate(18),
 									}}
 								/>
@@ -140,10 +148,9 @@ const FormPostStaff = (props) => {
 									id="staffStartDate"
 									name="staffStartDate"
 									className="form-control"
-									value={newStaffStartDate}
-									onChange={(e) => setNewStaffStartDate(e.target.value)}
+									value={updatedStaffStartDate}
+									onChange={(e) => setUpdatedStaffStartDate(e.target.value)}
 									validators={{
-										required,
 										maxDate: maxDate(0),
 									}}
 								/>
@@ -168,8 +175,8 @@ const FormPostStaff = (props) => {
 									id="staffDepartment"
 									name="staffDepartment"
 									className="form-control"
-									value={newStaffDepartment}
-									onChange={(e) => setNewStaffDepartment(e.target.value)}
+									value={updatedStaffDepartment}
+									onChange={(e) => setUpdatedStaffDepartment(e.target.value)}
 								>
 									<option value="Dept01">Sale</option>
 									<option value="Dept02">HR</option>
@@ -189,10 +196,9 @@ const FormPostStaff = (props) => {
 									id="staffSalaryScale"
 									name="staffSalaryScale"
 									className="form-control"
-									value={newStaffSalaryScale}
-									onChange={(e) => setNewStaffSalaryScale(e.target.value)}
+									value={updatedStaffSalaryScale}
+									onChange={(e) => setUpdatedStaffSalaryScale(e.target.value)}
 									validators={{
-										required,
 										minNumber: minNumber(0),
 										maxNumber: maxNumber(10),
 										isNumber,
@@ -221,10 +227,9 @@ const FormPostStaff = (props) => {
 									id="staffAnnualLeave"
 									name="staffAnnualLeave"
 									className="form-control"
-									value={newStaffAnnualLeave}
-									onChange={(e) => setNewStaffAnnualLeave(e.target.value)}
+									value={updatedStaffAnnualLeave}
+									onChange={(e) => setUpdatedStaffAnnualLeave(e.target.value)}
 									validators={{
-										required,
 										minNumber: minNumber(0),
 										maxNumber: maxNumber(14),
 										isNumber,
@@ -253,10 +258,9 @@ const FormPostStaff = (props) => {
 									id="staffOverTime"
 									name="staffOverTime"
 									className="form-control"
-									value={newStaffOverTime}
-									onChange={(e) => setNewStaffOverTime(e.target.value)}
+									value={updatedStaffOverTime}
+									onChange={(e) => setUpdatedStaffOverTime(e.target.value)}
 									validators={{
-										required,
 										minNumber: minNumber(0),
 										maxNumber: maxNumber(7),
 										isNumber,
@@ -268,7 +272,6 @@ const FormPostStaff = (props) => {
 								model=".staffOverTime"
 								show="touched"
 								messages={{
-									required: "Required!",
 									minNumber: "Must be a positive number of days!",
 									maxNumber: "Must be less than 7 days!",
 									isNumber: "Must be a number!",
@@ -278,7 +281,7 @@ const FormPostStaff = (props) => {
 						<Row className="form-group">
 							<Col md={{ size: 10, offset: 5 }}>
 								<Button type="submit" color="primary">
-									Thêm
+									Cập nhật
 								</Button>
 							</Col>
 						</Row>
@@ -289,4 +292,4 @@ const FormPostStaff = (props) => {
 	);
 };
 
-export default FormPostStaff;
+export default FormPatchStaff;

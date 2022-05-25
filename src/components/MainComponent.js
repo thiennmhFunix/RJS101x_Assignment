@@ -3,8 +3,10 @@ import Header from "./HeaderComponent";
 import Footer from "./FooterComponent";
 import Home from "./HomeComponent";
 import StaffDetail from "./StaffDetailComponent";
+import DepartmentDetail from "./DepartmentDetailComponent";
 import DeparmentList from "./DepartmentListComponent";
 import SalaryList from "./SalaryListComponent";
+import { Loading } from "./LoadingComponent";
 import {
 	Routes,
 	Route,
@@ -17,6 +19,9 @@ import { connect } from "react-redux";
 import {
 	fetchStaffs,
 	searchStaffs,
+	postStaff,
+	patchStaff,
+	deleteStaff,
 	fetchDepartments,
 } from "../redux/ActionCreators";
 
@@ -51,32 +56,63 @@ const mapDispatchToProps = (dispatch) => ({
 	searchStaffs: (searchKey) => {
 		dispatch(searchStaffs(searchKey));
 	},
+	postStaff: (
+		name,
+		doB,
+		startDate,
+		departmentId,
+		salaryScale,
+		annualLeave,
+		overTime
+	) => {
+		dispatch(
+			postStaff(
+				name,
+				doB,
+				startDate,
+				departmentId,
+				salaryScale,
+				annualLeave,
+				overTime
+			)
+		);
+	},
+	patchStaff: (
+		staffId,
+		name,
+		doB,
+		startDate,
+		departmentId,
+		salaryScale,
+		annualLeave,
+		overTime
+	) => {
+		dispatch(
+			patchStaff(
+				staffId,
+				name,
+				doB,
+				startDate,
+				departmentId,
+				salaryScale,
+				annualLeave,
+				overTime
+			)
+		);
+	},
+	deleteStaff: (staffId) => {
+		dispatch(deleteStaff(staffId));
+	},
 	fetchDepartments: () => {
 		dispatch(fetchDepartments());
 	},
 });
 
 class Main extends Component {
-	// constructor(props) {
-	// 	super(props);
-
-	// 	this.state = {
-	// 		newstaff: {},
-	// 	};
-
-	// 	this.saveNewStaff = this.saveNewStaff.bind(this);
-	// }
-
 	componentDidMount() {
 		this.props.fetchStaffs();
 		this.props.fetchDepartments();
 	}
-
-	// saveNewStaff(formValues) {
-	// 	this.setState({
-	// 		newstaff: { ...formValues },
-	// 	});
-	// }
 
 	render() {
 		const StaffWithId = () => {
@@ -85,19 +121,35 @@ class Main extends Component {
 			return (
 				<StaffDetail
 					staff={
-						this.state.staffs.filter(
+						this.props.staffs.staffs.filter(
 							(staff) => staff.id === parseInt(params.staffId, 10)
 						)[0]
 					}
 					isLoading={this.props.staffs.isLoading}
 					errMess={this.props.staffs.errMess}
+					departments={this.props.departments}
+					patchStaff={this.props.patchStaff}
+					deleteStaff={this.props.deleteStaff}
 				/>
 			);
 		};
 
-		// const NewStaff = () => {
-		// 	return <StaffDetail staff={this.state.newstaff} />;
-		// };
+		const DepartmentWithId = () => {
+			const params = useParams();
+
+			return (
+				<DepartmentDetail
+					department={
+						this.props.departments.departments.filter(
+							(department) => department.name === params.departmentName
+						)[0]
+					}
+					isLoading={this.props.departments.isLoading}
+					errMess={this.props.departments.errMess}
+					staffs={this.props.staffs}
+				/>
+			);
+		};
 
 		return (
 			<div>
@@ -108,32 +160,33 @@ class Main extends Component {
 						path="stafflist"
 						element={
 							<Home
-								staffs={this.state.staffs}
-								// savenewstaff={this.saveNewStaff}
-								departments={this.state.departments}
-								staffsLoading={this.props.staffs.isLoading}
-								staffsErrMess={this.props.staffs.errMess}
+								staffs={this.props.staffs}
+								departments={this.props.departments}
 								searchStaffs={this.props.searchStaffs}
+								postStaff={this.props.postStaff}
 							/>
 						}
 					/>
-					{/* <Route path="stafflist/:staffId" element={<StaffWithId />} /> */}
-					{/* <Route path="stafflist/101" element={<NewStaff />} /> */}
+					<Route path="stafflist/:staffId" element={<StaffWithId />} />
 					<Route
 						exact
 						path="departmentlist"
 						element={
 							<DeparmentList
-								departments={this.state.departments}
-								departmentsLoading={this.props.departments.isLoading}
-								departmentsErrMess={this.props.departments.errMess}
+								departments={this.props.departments}
+								isLoading={this.props.departments.isLoading}
+								errMess={this.props.departments.errMess}
 							/>
 						}
 					/>
 					<Route
+						path="departmentlist/:departmentName"
+						element={<DepartmentWithId />}
+					/>
+					<Route
 						exact
 						path="salarylist"
-						element={<SalaryList staffs={this.state.staffs} />}
+						element={<SalaryList staffs={this.props.staffs} />}
 					/>
 					<Route path="*" element={<Navigate to="/stafflist" replace />} />
 				</Routes>
