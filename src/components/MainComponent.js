@@ -6,7 +6,7 @@ import StaffDetail from "./StaffDetailComponent";
 import DepartmentDetail from "./DepartmentDetailComponent";
 import DeparmentList from "./DepartmentListComponent";
 import SalaryList from "./SalaryListComponent";
-import { Loading } from "./LoadingComponent";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import {
 	Routes,
 	Route,
@@ -17,12 +17,12 @@ import {
 } from "react-router-dom";
 import { connect } from "react-redux";
 import {
+	fetchDepartments,
 	fetchStaffs,
 	searchStaffs,
 	postStaff,
 	patchStaff,
 	deleteStaff,
-	fetchDepartments,
 } from "../redux/ActionCreators";
 
 function withRouter(Component) {
@@ -44,12 +44,15 @@ function withRouter(Component) {
 
 const mapStateToProps = (state) => {
 	return {
-		staffs: state.staffs,
 		departments: state.departments,
+		staffs: state.staffs,
 	};
 };
 
 const mapDispatchToProps = (dispatch) => ({
+	fetchDepartments: () => {
+		dispatch(fetchDepartments());
+	},
 	fetchStaffs: () => {
 		dispatch(fetchStaffs());
 	},
@@ -103,15 +106,12 @@ const mapDispatchToProps = (dispatch) => ({
 	deleteStaff: (staffId) => {
 		dispatch(deleteStaff(staffId));
 	},
-	fetchDepartments: () => {
-		dispatch(fetchDepartments());
-	},
 });
 
 class Main extends Component {
 	componentDidMount() {
-		this.props.fetchStaffs();
 		this.props.fetchDepartments();
+		this.props.fetchStaffs();
 	}
 
 	render() {
@@ -154,42 +154,50 @@ class Main extends Component {
 		return (
 			<div>
 				<Header />
-				<Routes>
-					<Route
-						exact
-						path="stafflist"
-						element={
-							<Home
-								staffs={this.props.staffs}
-								departments={this.props.departments}
-								searchStaffs={this.props.searchStaffs}
-								postStaff={this.props.postStaff}
+				<TransitionGroup>
+					<CSSTransition
+						key={this.props.location.key}
+						classNames="page"
+						timeout={300}
+					>
+						<Routes>
+							<Route
+								exact
+								path="stafflist"
+								element={
+									<Home
+										departments={this.props.departments}
+										staffs={this.props.staffs}
+										searchStaffs={this.props.searchStaffs}
+										postStaff={this.props.postStaff}
+									/>
+								}
 							/>
-						}
-					/>
-					<Route path="stafflist/:staffId" element={<StaffWithId />} />
-					<Route
-						exact
-						path="departmentlist"
-						element={
-							<DeparmentList
-								departments={this.props.departments}
-								isLoading={this.props.departments.isLoading}
-								errMess={this.props.departments.errMess}
+							<Route path="stafflist/:staffId" element={<StaffWithId />} />
+							<Route
+								exact
+								path="departmentlist"
+								element={
+									<DeparmentList
+										departments={this.props.departments}
+										isLoading={this.props.departments.isLoading}
+										errMess={this.props.departments.errMess}
+									/>
+								}
 							/>
-						}
-					/>
-					<Route
-						path="departmentlist/:departmentName"
-						element={<DepartmentWithId />}
-					/>
-					<Route
-						exact
-						path="salarylist"
-						element={<SalaryList staffs={this.props.staffs} />}
-					/>
-					<Route path="*" element={<Navigate to="/stafflist" replace />} />
-				</Routes>
+							<Route
+								path="departmentlist/:departmentName"
+								element={<DepartmentWithId />}
+							/>
+							<Route
+								exact
+								path="salarylist"
+								element={<SalaryList staffs={this.props.staffs} />}
+							/>
+							<Route path="*" element={<Navigate to="/stafflist" replace />} />
+						</Routes>
+					</CSSTransition>
+				</TransitionGroup>
 				<Footer />
 			</div>
 		);

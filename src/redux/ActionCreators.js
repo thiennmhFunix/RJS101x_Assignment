@@ -1,6 +1,45 @@
 import * as ActionTypes from "./ActionTypes";
 import { baseUrl } from "../shared/baseUrl";
 
+export const fetchDepartments = () => (dispatch) => {
+	dispatch(departmentsLoading(true));
+
+	return fetch(baseUrl + "departments")
+		.then(
+			(response) => {
+				if (response.ok) return response;
+				else {
+					var error = new Error(
+						"Error " + response.status + ": " + response.statusText
+					);
+					error.response = response;
+					throw error;
+				}
+			},
+			(error) => {
+				var errmess = new Error(error.message);
+				throw errmess;
+			}
+		)
+		.then((response) => response.json())
+		.then((departments) => dispatch(departmentsAdd(departments)))
+		.catch((error) => dispatch(departmentsFailed(error.message)));
+};
+
+export const departmentsLoading = () => ({
+	type: ActionTypes.DEPARTMENTS_LOADING,
+});
+
+export const departmentsFailed = (errmess) => ({
+	type: ActionTypes.DEPARTMENTS_FAILED,
+	payload: errmess,
+});
+
+export const departmentsAdd = (departments) => ({
+	type: ActionTypes.DEPARTMENTS_ADD,
+	payload: departments,
+});
+
 export const fetchStaffs = () => (dispatch) => {
 	dispatch(staffsLoading(true));
 
@@ -45,6 +84,11 @@ export const staffPost = (staff) => ({
 	payload: staff,
 });
 
+// export const staffPatch = (staff) => ({
+// 	type: ActionTypes.STAFF_PATCH,
+// 	payload: staff,
+// });
+
 export const searchStaffs = (searchKey) => (dispatch) => {
 	return fetch(baseUrl + "staffs")
 		.then(
@@ -86,8 +130,8 @@ export const postStaff =
 			salaryScale: salaryScale,
 			annualLeave: annualLeave,
 			overTime: overTime,
-			image: "/images/vadonut.png",
-			salary: 3500000,
+			image: "/assets/images/vadonut.png",
+			salary: 3600000,
 		};
 
 		return fetch(baseUrl + "staffs", {
@@ -133,7 +177,11 @@ export const patchStaff =
 		overTime
 	) =>
 	(dispatch) => {
-		return fetch(baseUrl + "staffs/" + staffId, {
+		console.log(staffId + "dispatch");
+		console.log(name + "dispatch");
+		console.log(doB + "dispatch");
+
+		return fetch(baseUrl + "staffs", {
 			method: "PATCH",
 			body: JSON.stringify({
 				name: name,
@@ -146,6 +194,7 @@ export const patchStaff =
 			}),
 			headers: {
 				"Content-Type": "application/json",
+				"Access-Control-Allow-Origin": "*",
 			},
 		})
 			.then(
@@ -165,7 +214,10 @@ export const patchStaff =
 				}
 			)
 			.then((response) => response.json())
-			.then((response) => dispatch(staffPost(response)))
+			.then((response) => {
+				console.log(response);
+				// dispatch(staffPost(response));
+			})
 			.catch((error) => {
 				console.log("Patch staffs", error.message);
 			});
@@ -195,47 +247,11 @@ export const deleteStaff = (staffId) => (dispatch) => {
 			}
 		)
 		.then((response) => response.json())
-		.then((response) => dispatch(staffPost(response)))
+		.then((response) => {
+			console.log(response);
+			dispatch(staffsAdd(response));
+		})
 		.catch((error) => {
 			console.log("Delete staffs", error.message);
 		});
 };
-
-export const fetchDepartments = () => (dispatch) => {
-	dispatch(departmentsLoading(true));
-
-	return fetch(baseUrl + "departments")
-		.then(
-			(response) => {
-				if (response.ok) return response;
-				else {
-					var error = new Error(
-						"Error " + response.status + ": " + response.statusText
-					);
-					error.response = response;
-					throw error;
-				}
-			},
-			(error) => {
-				var errmess = new Error(error.message);
-				throw errmess;
-			}
-		)
-		.then((response) => response.json())
-		.then((departments) => dispatch(departmentsAdd(departments)))
-		.catch((error) => dispatch(departmentsFailed(error.message)));
-};
-
-export const departmentsLoading = () => ({
-	type: ActionTypes.DEPARTMENTS_LOADING,
-});
-
-export const departmentsFailed = (errmess) => ({
-	type: ActionTypes.DEPARTMENTS_FAILED,
-	payload: errmess,
-});
-
-export const departmentsAdd = (departments) => ({
-	type: ActionTypes.DEPARTMENTS_ADD,
-	payload: departments,
-});

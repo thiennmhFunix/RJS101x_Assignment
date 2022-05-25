@@ -32,6 +32,17 @@ export const Staffs = (
 			var staff = action.payload;
 			return { ...state, staffs: state.staffs.concat(staff) };
 
+		// case ActionTypes.STAFF_PATCH:
+		// 	var staff = action.payload;
+		// 	var id = staff.id;
+		// 	var index = state.staffs.indexOf(
+		// 		state.staffs.filter((staff) => staff.id === id)[0]
+		// 	);
+		// 	return {
+		// 		...state,
+		// 		staffs: state.staffs.splice(index, 1).splice(index, 0, staff),
+		// 	};
+
 		default:
 			return state;
 	}

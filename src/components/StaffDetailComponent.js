@@ -10,6 +10,7 @@ import {
 } from "reactstrap";
 import FormPatchStaff from "./FormPatchStaffComponent";
 import FormDeleteStaff from "./FormDeleteStaffComponent";
+import { FadeTransform } from "react-animation-components";
 import { Loading } from "./LoadingComponent";
 import dateFormat from "dateformat";
 import { Link } from "react-router-dom";
@@ -31,15 +32,22 @@ function RenderStaff(props) {
 				</div>
 			</div>
 		);
-	} else if (props.staff != null) {
+	} else if (props.staff != null && props.departments.isLoading != true) {
 		return (
 			<div className="row">
 				<div className="col-12 col-md-5 m-1">
-					<CardImg
-						width="100%"
-						src="/assets/images/vadonut.png"
-						alt={props.staff.name}
-					/>
+					<FadeTransform
+						in
+						transformProps={{
+							exitTransform: "scale(0.5) translateY(-50%)",
+						}}
+					>
+						<CardImg
+							width="100%"
+							src="/assets/images/vadonut.png"
+							alt={props.staff.name}
+						/>
+					</FadeTransform>
 				</div>
 				<div className="col-12 col-md-5 m-1">
 					<CardBody>
@@ -51,14 +59,14 @@ function RenderStaff(props) {
 							Ngày vào công ty:{" "}
 							{dateFormat(props.staff.startDate, "dd/mm/yyyy")}
 						</CardText>
-						{/* <CardText>
+						<CardText>
 							Phòng ban:{" "}
-							{
-								props.departments.departments.filter(
-									(department) => department.id === props.staff.departmentId
-								)[0].name
-							}
-						</CardText> */}
+							{props.staff.departmentId != ""
+								? props.departments.departments.filter(
+										(department) => department.id === props.staff.departmentId
+								  )[0].name
+								: "Empty"}
+						</CardText>
 						<CardText>Số ngày nghỉ còn lại: {props.staff.annualLeave}</CardText>
 						<CardText>Số ngày đã làm thêm: {props.staff.overTime}</CardText>
 					</CardBody>

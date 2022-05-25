@@ -25,7 +25,7 @@ const FormPatchStaff = (props) => {
 		staff.startDate
 	);
 	const [updatedStaffDepartment, setUpdatedStaffDepartment] = useState(
-		staff.department
+		staff.departmentId
 	);
 	const [updatedStaffSalaryScale, setUpdatedStaffSalaryScale] = useState(
 		staff.salaryScale
@@ -44,6 +44,10 @@ const FormPatchStaff = (props) => {
 	function handlePatch() {
 		toggleModal();
 
+		console.log(staff.id);
+		console.log(updatedStaffName);
+		console.log(updatedStaffDoB);
+
 		patchStaff(
 			staff.id,
 			updatedStaffName,
@@ -54,8 +58,6 @@ const FormPatchStaff = (props) => {
 			updatedStaffAnnualLeave,
 			updatedStaffOverTime
 		);
-
-		window.location.reload();
 	}
 
 	const m = moment();
@@ -92,6 +94,7 @@ const FormPatchStaff = (props) => {
 									name="staffName"
 									className="form-control"
 									value={updatedStaffName}
+									defaultValue={staff.name}
 									onChange={(e) => setUpdatedStaffName(e.target.value)}
 									validators={{
 										minLength: minLength(3),
@@ -109,7 +112,7 @@ const FormPatchStaff = (props) => {
 								}}
 							/>
 						</Row>
-						<Row className="form-group">
+						{/* <Row className="form-group">
 							<Label htmlFor="staffDoB" md={5}>
 								Ngày sinh
 							</Label>
@@ -121,6 +124,7 @@ const FormPatchStaff = (props) => {
 									name="staffDoB"
 									className="form-control"
 									value={updatedStaffDoB}
+									defaultValue={staff.doB}
 									onChange={(e) => setUpdatedStaffDoB(e.target.value)}
 									validators={{
 										maxDate: maxDate(18),
@@ -132,7 +136,6 @@ const FormPatchStaff = (props) => {
 								model=".staffDoB"
 								show="touched"
 								messages={{
-									required: "Required",
 									maxDate: "Must be over 18 years old!",
 								}}
 							/>
@@ -149,6 +152,7 @@ const FormPatchStaff = (props) => {
 									name="staffStartDate"
 									className="form-control"
 									value={updatedStaffStartDate}
+									defaultValue={staff.startDate}
 									onChange={(e) => setUpdatedStaffStartDate(e.target.value)}
 									validators={{
 										maxDate: maxDate(0),
@@ -160,12 +164,11 @@ const FormPatchStaff = (props) => {
 								model=".staffStartDate"
 								show="touched"
 								messages={{
-									required: "Required",
 									maxDate: "Must before today!",
 								}}
 							/>
-						</Row>
-						<Row className="form-group">
+						</Row> */}
+						{/* <Row className="form-group">
 							<Label htmlFor="staffDepartment" md={5}>
 								Phòng ban
 							</Label>
@@ -197,6 +200,7 @@ const FormPatchStaff = (props) => {
 									name="staffSalaryScale"
 									className="form-control"
 									value={updatedStaffSalaryScale}
+									defaultValue={staff.salaryScale}
 									onChange={(e) => setUpdatedStaffSalaryScale(e.target.value)}
 									validators={{
 										minNumber: minNumber(0),
@@ -210,7 +214,6 @@ const FormPatchStaff = (props) => {
 								model=".staffSalaryScale"
 								show="touched"
 								messages={{
-									required: "Required!",
 									minNumber: "Must be a positive number!",
 									maxNumber: "Must not be greater than 10.0!",
 									isNumber: "Must be a number!",
@@ -228,6 +231,7 @@ const FormPatchStaff = (props) => {
 									name="staffAnnualLeave"
 									className="form-control"
 									value={updatedStaffAnnualLeave}
+									defaultValue={staff.annualLeave}
 									onChange={(e) => setUpdatedStaffAnnualLeave(e.target.value)}
 									validators={{
 										minNumber: minNumber(0),
@@ -241,7 +245,6 @@ const FormPatchStaff = (props) => {
 								model=".staffAnnualLeave"
 								show="touched"
 								messages={{
-									required: "Required!",
 									minNumber: "Must be a positive number of days!",
 									maxNumber: "Must be less than 14 days!",
 									isNumber: "Must be a number!",
@@ -259,10 +262,11 @@ const FormPatchStaff = (props) => {
 									name="staffOverTime"
 									className="form-control"
 									value={updatedStaffOverTime}
+									defaultValue={staff.overTime}
 									onChange={(e) => setUpdatedStaffOverTime(e.target.value)}
 									validators={{
 										minNumber: minNumber(0),
-										maxNumber: maxNumber(7),
+										maxNumber: maxNumber(14),
 										isNumber,
 									}}
 								/>
@@ -273,11 +277,11 @@ const FormPatchStaff = (props) => {
 								show="touched"
 								messages={{
 									minNumber: "Must be a positive number of days!",
-									maxNumber: "Must be less than 7 days!",
+									maxNumber: "Must be less than 14 days!",
 									isNumber: "Must be a number!",
 								}}
 							/>
-						</Row>
+						</Row> */}
 						<Row className="form-group">
 							<Col md={{ size: 10, offset: 5 }}>
 								<Button type="submit" color="primary">

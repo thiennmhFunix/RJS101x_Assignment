@@ -5,7 +5,6 @@ import { LocalForm } from "react-redux-form";
 const FormDeleteStaff = (props) => {
 	function handleDelete() {
 		props.deleteStaff(props.staff.id);
-		window.location.replace("/stafflist");
 	}
 
 	return (

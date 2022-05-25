@@ -258,7 +258,7 @@ const FormPostStaff = (props) => {
 									validators={{
 										required,
 										minNumber: minNumber(0),
-										maxNumber: maxNumber(7),
+										maxNumber: maxNumber(14),
 										isNumber,
 									}}
 								/>
@@ -270,7 +270,7 @@ const FormPostStaff = (props) => {
 								messages={{
 									required: "Required!",
 									minNumber: "Must be a positive number of days!",
-									maxNumber: "Must be less than 7 days!",
+									maxNumber: "Must be less than 14 days!",
 									isNumber: "Must be a number!",
 								}}
 							/>
