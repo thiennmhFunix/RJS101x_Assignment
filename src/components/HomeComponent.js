@@ -38,7 +38,12 @@ const Home = (props) => {
 				</div>
 
 				<div className="row">
-					<StaffList staffs={staffs.staffs} />
+					<StaffList
+						staffs={staffs.staffs}
+						isLoading={staffs.isLoading}
+						errMess={staffs.errMess}
+						departments={departments}
+					/>
 				</div>
 			</div>
 		);

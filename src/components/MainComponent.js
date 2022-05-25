@@ -144,9 +144,8 @@ class Main extends Component {
 							(department) => department.name === params.departmentName
 						)[0]
 					}
-					isLoading={this.props.departments.isLoading}
-					errMess={this.props.departments.errMess}
 					staffs={this.props.staffs}
+					departments={this.props.departments}
 				/>
 			);
 		};

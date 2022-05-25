@@ -183,6 +183,8 @@ export const patchStaff =
 
 		return fetch(baseUrl + "staffs", {
 			method: "PATCH",
+			mode: "cors",
+			//credentials: "include",
 			body: JSON.stringify({
 				name: name,
 				doB: doB,
@@ -194,7 +196,9 @@ export const patchStaff =
 			}),
 			headers: {
 				"Content-Type": "application/json",
-				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Allow-Origin": "http://localhost:3000",
+				"Access-Control-Allow-Credentials": "true",
+				"Access-Control-Allow-Headers": "Content-Type",
 			},
 		})
 			.then(
@@ -216,7 +220,7 @@ export const patchStaff =
 			.then((response) => response.json())
 			.then((response) => {
 				console.log(response);
-				// dispatch(staffPost(response));
+				dispatch(staffPost(response));
 			})
 			.catch((error) => {
 				console.log("Patch staffs", error.message);

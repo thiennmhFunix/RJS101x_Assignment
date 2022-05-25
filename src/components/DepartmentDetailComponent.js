@@ -13,25 +13,49 @@ import dateFormat from "dateformat";
 import { Link } from "react-router-dom";
 
 const DepartmentDetail = (props) => {
-	return (
-		<div className="container">
-			<div className="row">
-				<Breadcrumb>
-					<BreadcrumbItem>
-						<Link to="/departmentlist">Phòng ban</Link>
-					</BreadcrumbItem>
-					<BreadcrumbItem active>{props.department.name}</BreadcrumbItem>
-				</Breadcrumb>
+	if (props.staffs.isLoading) {
+		return (
+			<div className="container">
+				<div className="row">
+					<Loading />;
+				</div>
 			</div>
-			<div className="row">
-				<StaffList
-					staffs={props.staffs.staffs.filter(
-						(staff) => staff.departmentId === props.department.id
-					)}
-				/>
+		);
+	} else if (props.staffs.errMess) {
+		return (
+			<div className="container">
+				<div className="row">
+					<h4>{props.errMess}</h4>;
+				</div>
 			</div>
-		</div>
-	);
+		);
+	} else if (
+		props.staffs.staffs != null &&
+		props.departments.isLoading != true
+	) {
+		return (
+			<div className="container">
+				<div className="row">
+					<Breadcrumb>
+						<BreadcrumbItem>
+							<Link to="/departmentlist">Phòng ban</Link>
+						</BreadcrumbItem>
+						<BreadcrumbItem active>{props.department.name}</BreadcrumbItem>
+					</Breadcrumb>
+				</div>
+				<div className="row">
+					<StaffList
+						staffs={props.staffs.staffs.filter(
+							(staff) => staff.departmentId === props.department.id
+						)}
+						isLoading={props.staffs.isLoading}
+						errMess={props.staffs.errMess}
+						departments={props.departments}
+					/>
+				</div>
+			</div>
+		);
+	}
 };
 
 export default DepartmentDetail;
