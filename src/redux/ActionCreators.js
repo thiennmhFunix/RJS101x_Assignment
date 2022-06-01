@@ -139,6 +139,6 @@ export const deleteStaff = (staffId) => (dispatch) => {
 			dispatch(staffsAdd(response.data));
 		})
 		.catch(function (error) {
-			console.log("Delete staffs", error.message);
+			console.log("Delete staff", error.message);
 		});
 };
