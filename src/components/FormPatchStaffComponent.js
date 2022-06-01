@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 import {
-	Card,
-	CardImg,
-	CardText,
 	Button,
 	Modal,
 	ModalHeader,
@@ -12,6 +9,8 @@ import {
 	Col,
 } from "reactstrap";
 import { Control, LocalForm, Errors } from "react-redux-form";
+import { useNavigate } from "react-router-dom";
+
 import dateFormat from "dateformat";
 import moment from "moment";
 
@@ -37,16 +36,14 @@ const FormPatchStaff = (props) => {
 		staff.overTime
 	);
 
+	let navigate = useNavigate();
+
 	function toggleModal() {
 		setModalOpen(!isModalOpen);
 	}
 
 	function handlePatch() {
 		toggleModal();
-
-		console.log(staff.id);
-		console.log(updatedStaffName);
-		console.log(updatedStaffDoB);
 
 		patchStaff(
 			staff.id,
@@ -58,6 +55,8 @@ const FormPatchStaff = (props) => {
 			updatedStaffAnnualLeave,
 			updatedStaffOverTime
 		);
+
+		navigate(`"../stafflist/${staff.id}"`, { replace: true });
 	}
 
 	const m = moment();
@@ -112,7 +111,7 @@ const FormPatchStaff = (props) => {
 								}}
 							/>
 						</Row>
-						{/* <Row className="form-group">
+						<Row className="form-group">
 							<Label htmlFor="staffDoB" md={5}>
 								Ngày sinh
 							</Label>
@@ -167,8 +166,8 @@ const FormPatchStaff = (props) => {
 									maxDate: "Must before today!",
 								}}
 							/>
-						</Row> */}
-						{/* <Row className="form-group">
+						</Row>
+						<Row className="form-group">
 							<Label htmlFor="staffDepartment" md={5}>
 								Phòng ban
 							</Label>
@@ -281,7 +280,7 @@ const FormPatchStaff = (props) => {
 									isNumber: "Must be a number!",
 								}}
 							/>
-						</Row> */}
+						</Row>
 						<Row className="form-group">
 							<Col md={{ size: 10, offset: 5 }}>
 								<Button type="submit" color="primary">

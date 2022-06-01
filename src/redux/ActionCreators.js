@@ -1,29 +1,18 @@
 import * as ActionTypes from "./ActionTypes";
 import { baseUrl } from "../shared/baseUrl";
+import axios from "axios";
 
 export const fetchDepartments = () => (dispatch) => {
 	dispatch(departmentsLoading(true));
 
-	return fetch(baseUrl + "departments")
-		.then(
-			(response) => {
-				if (response.ok) return response;
-				else {
-					var error = new Error(
-						"Error " + response.status + ": " + response.statusText
-					);
-					error.response = response;
-					throw error;
-				}
-			},
-			(error) => {
-				var errmess = new Error(error.message);
-				throw errmess;
-			}
-		)
-		.then((response) => response.json())
-		.then((departments) => dispatch(departmentsAdd(departments)))
-		.catch((error) => dispatch(departmentsFailed(error.message)));
+	return axios
+		.get(baseUrl + "departments")
+		.then(function (departments) {
+			dispatch(departmentsAdd(departments.data));
+		})
+		.catch(function (error) {
+			dispatch(departmentsFailed(error.message));
+		});
 };
 
 export const departmentsLoading = () => ({
@@ -43,26 +32,14 @@ export const departmentsAdd = (departments) => ({
 export const fetchStaffs = () => (dispatch) => {
 	dispatch(staffsLoading(true));
 
-	return fetch(baseUrl + "staffs")
-		.then(
-			(response) => {
-				if (response.ok) return response;
-				else {
-					var error = new Error(
-						"Error " + response.status + ": " + response.statusText
-					);
-					error.response = response;
-					throw error;
-				}
-			},
-			(error) => {
-				var errmess = new Error(error.message);
-				throw errmess;
-			}
-		)
-		.then((response) => response.json())
-		.then((staffs) => dispatch(staffsAdd(staffs)))
-		.catch((error) => dispatch(staffsFailed(error.message)));
+	return axios
+		.get(baseUrl + "staffs")
+		.then(function (staffs) {
+			dispatch(staffsAdd(staffs.data));
+		})
+		.catch(function (error) {
+			dispatch(staffsFailed(error.message));
+		});
 };
 
 export const staffsLoading = () => ({
@@ -84,39 +61,20 @@ export const staffPost = (staff) => ({
 	payload: staff,
 });
 
-// export const staffPatch = (staff) => ({
-// 	type: ActionTypes.STAFF_PATCH,
-// 	payload: staff,
-// });
-
 export const searchStaffs = (searchKey) => (dispatch) => {
-	return fetch(baseUrl + "staffs")
-		.then(
-			(response) => {
-				if (response.ok) return response;
-				else {
-					var error = new Error(
-						"Error " + response.status + ": " + response.statusText
-					);
-					error.response = response;
-					throw error;
-				}
-			},
-			(error) => {
-				var errmess = new Error(error.message);
-				throw errmess;
-			}
-		)
-		.then((response) => response.json())
+	return axios
+		.get(baseUrl + "staffs")
 		.then((staffs) => {
 			var staffsfiltered = [];
-			staffs.map((staff) => {
+			staffs.data.map((staff) => {
 				if (staff.name.toLowerCase().includes(searchKey.toLowerCase()))
 					return staffsfiltered.push(staff);
 			});
 			dispatch(staffsAdd(staffsfiltered));
 		})
-		.catch((error) => dispatch(staffsFailed(error.message)));
+		.catch(function (error) {
+			dispatch(staffsFailed(error.message));
+		});
 };
 
 export const postStaff =
@@ -134,33 +92,12 @@ export const postStaff =
 			salary: 3600000,
 		};
 
-		return fetch(baseUrl + "staffs", {
-			method: "POST",
-			body: JSON.stringify(newStaff),
-			headers: {
-				"Content-Type": "application/json",
-			},
-			credentials: "same-origin",
-		})
-			.then(
-				(response) => {
-					if (response.ok) return response;
-					else {
-						var error = new Error(
-							"Error " + response.status + ": " + response.statusText
-						);
-						error.response = response;
-						throw error;
-					}
-				},
-				(error) => {
-					var errmess = new Error(error.message);
-					throw errmess;
-				}
-			)
-			.then((response) => response.json())
-			.then((response) => dispatch(staffPost(response)))
-			.catch((error) => {
+		return axios
+			.post(baseUrl + "staffs", newStaff)
+			.then(function (staff) {
+				dispatch(staffPost(staff.data));
+			})
+			.catch(function (error) {
 				console.log("Post staffs", error.message);
 			});
 	};
@@ -177,15 +114,8 @@ export const patchStaff =
 		overTime
 	) =>
 	(dispatch) => {
-		console.log(staffId + "dispatch");
-		console.log(name + "dispatch");
-		console.log(doB + "dispatch");
-
-		return fetch(baseUrl + "staffs", {
-			method: "PATCH",
-			mode: "cors",
-			//credentials: "include",
-			body: JSON.stringify({
+		return axios
+			.patch(baseUrl + "staffs/" + staffId, {
 				name: name,
 				doB: doB,
 				startDate: startDate,
@@ -193,69 +123,22 @@ export const patchStaff =
 				salaryScale: salaryScale,
 				annualLeave: annualLeave,
 				overTime: overTime,
-			}),
-			headers: {
-				"Content-Type": "application/json",
-				"Access-Control-Allow-Origin": "http://localhost:3000",
-				"Access-Control-Allow-Credentials": "true",
-				"Access-Control-Allow-Headers": "Content-Type",
-			},
-		})
-			.then(
-				(response) => {
-					if (response.ok) return response;
-					else {
-						var error = new Error(
-							"Error " + response.status + ": " + response.statusText
-						);
-						error.response = response;
-						throw error;
-					}
-				},
-				(error) => {
-					var errmess = new Error(error.message);
-					throw errmess;
-				}
-			)
-			.then((response) => response.json())
+			})
 			.then((response) => {
-				console.log(response);
 				dispatch(staffPost(response));
 			})
-			.catch((error) => {
+			.catch(function (error) {
 				console.log("Patch staffs", error.message);
 			});
 	};
 
 export const deleteStaff = (staffId) => (dispatch) => {
-	return fetch(baseUrl + "staffs/" + staffId, {
-		method: "DELETE",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	})
-		.then(
-			(response) => {
-				if (response.ok) return response;
-				else {
-					var error = new Error(
-						"Error " + response.status + ": " + response.statusText
-					);
-					error.response = response;
-					throw error;
-				}
-			},
-			(error) => {
-				var errmess = new Error(error.message);
-				throw errmess;
-			}
-		)
-		.then((response) => response.json())
+	return axios
+		.delete(baseUrl + "staffs/" + staffId)
 		.then((response) => {
-			console.log(response);
-			dispatch(staffsAdd(response));
+			dispatch(staffsAdd(response.data));
 		})
-		.catch((error) => {
+		.catch(function (error) {
 			console.log("Delete staffs", error.message);
 		});
 };

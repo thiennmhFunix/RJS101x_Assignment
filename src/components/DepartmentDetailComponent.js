@@ -29,10 +29,7 @@ const DepartmentDetail = (props) => {
 				</div>
 			</div>
 		);
-	} else if (
-		props.staffs.staffs != null &&
-		props.departments.isLoading != true
-	) {
+	} else if (props.staffs.staffs && props.departments.isLoading != true) {
 		return (
 			<div className="container">
 				<div className="row">
@@ -55,7 +52,7 @@ const DepartmentDetail = (props) => {
 				</div>
 			</div>
 		);
-	}
+	} else return <div></div>;
 };
 
 export default DepartmentDetail;

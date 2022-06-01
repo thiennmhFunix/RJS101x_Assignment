@@ -118,36 +118,39 @@ class Main extends Component {
 		const StaffWithId = () => {
 			const params = useParams();
 
-			return (
-				<StaffDetail
-					staff={
-						this.props.staffs.staffs.filter(
-							(staff) => staff.id === parseInt(params.staffId, 10)
-						)[0]
-					}
-					isLoading={this.props.staffs.isLoading}
-					errMess={this.props.staffs.errMess}
-					departments={this.props.departments}
-					patchStaff={this.props.patchStaff}
-					deleteStaff={this.props.deleteStaff}
-				/>
-			);
+			if (this.props.staffs.staffs)
+				return (
+					<StaffDetail
+						staff={
+							this.props.staffs.staffs.filter(
+								(staff) => staff.id === parseInt(params.staffId, 10)
+							)[0]
+						}
+						isLoading={this.props.staffs.isLoading}
+						errMess={this.props.staffs.errMess}
+						departments={this.props.departments}
+						patchStaff={this.props.patchStaff}
+						deleteStaff={this.props.deleteStaff}
+					/>
+				);
+			else return <div></div>;
 		};
 
 		const DepartmentWithId = () => {
 			const params = useParams();
-
-			return (
-				<DepartmentDetail
-					department={
-						this.props.departments.departments.filter(
-							(department) => department.name === params.departmentName
-						)[0]
-					}
-					staffs={this.props.staffs}
-					departments={this.props.departments}
-				/>
-			);
+			if (this.props.departments.departments)
+				return (
+					<DepartmentDetail
+						department={
+							this.props.departments.departments.filter(
+								(department) => department.name === params.departmentName
+							)[0]
+						}
+						staffs={this.props.staffs}
+						departments={this.props.departments}
+					/>
+				);
+			else return <div></div>;
 		};
 
 		return (

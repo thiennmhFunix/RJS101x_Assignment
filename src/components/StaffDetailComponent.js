@@ -70,7 +70,11 @@ function RenderStaff(props) {
 						<CardText>Số ngày nghỉ còn lại: {props.staff.annualLeave}</CardText>
 						<CardText>Số ngày đã làm thêm: {props.staff.overTime}</CardText>
 					</CardBody>
-					<FormPatchStaff patchStaff={props.patchStaff} staff={props.staff} />
+					<FormPatchStaff
+						patchStaff={props.patchStaff}
+						postStaff1={props.postStaff1}
+						staff={props.staff}
+					/>
 					<FormDeleteStaff
 						deleteStaff={props.deleteStaff}
 						staff={props.staff}
@@ -101,6 +105,7 @@ const StaffDetail = (props) => {
 					errMess={props.errMess}
 					departments={props.departments}
 					patchStaff={props.patchStaff}
+					postStaff1={props.postStaff1}
 					deleteStaff={props.deleteStaff}
 				/>
 			</div>

@@ -3,18 +3,24 @@ import { Card, CardText, CardTitle } from "reactstrap";
 import { Link } from "react-router-dom";
 
 const DepartmentList = (props) => {
-	const departmentlist = props.departments.departments.map((department) => {
-		return (
-			<div key={department.id} className="col-12 col-sm-6 col-md-4">
-				<Card>
-					<Link to={`/departmentlist/${department.name}`}>
-						<CardTitle>{department.name}</CardTitle>
-						<CardText>Số lượng nhân viên: {department.numberOfStaff}</CardText>
-					</Link>
-				</Card>
-			</div>
-		);
-	});
+	const departmentlist = props.departments.departments ? (
+		props.departments.departments.map((department) => {
+			return (
+				<div key={department.id} className="col-12 col-sm-6 col-md-4">
+					<Card>
+						<Link to={`/departmentlist/${department.name}`}>
+							<CardTitle>{department.name}</CardTitle>
+							<CardText>
+								Số lượng nhân viên: {department.numberOfStaff}
+							</CardText>
+						</Link>
+					</Card>
+				</div>
+			);
+		})
+	) : (
+		<div></div>
+	);
 
 	return (
 		<div className="container">

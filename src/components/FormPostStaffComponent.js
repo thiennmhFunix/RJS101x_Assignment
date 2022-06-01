@@ -14,7 +14,7 @@ import {
 import { Control, LocalForm, Errors } from "react-redux-form";
 import dateFormat from "dateformat";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const FormPostStaff = (props) => {
 	const { postStaff, departments } = props;
@@ -27,6 +27,8 @@ const FormPostStaff = (props) => {
 	const [newStaffSalaryScale, setNewStaffSalaryScale] = useState("");
 	const [newStaffAnnualLeave, setNewStaffAnnualLeave] = useState("");
 	const [newStaffOverTime, setNewStaffOverTime] = useState("");
+
+	let navigate = useNavigate();
 
 	function toggleModal() {
 		setModalOpen(!isModalOpen);
@@ -44,6 +46,8 @@ const FormPostStaff = (props) => {
 			newStaffAnnualLeave,
 			newStaffOverTime
 		);
+
+		navigate("../", { replace: true });
 	}
 
 	const m = moment();
